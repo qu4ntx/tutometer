@@ -72,9 +72,10 @@ p {
 }
 
 .tabcontent {
-    display: none;
+    display: none;  /* Ensure all tab content is hidden by default */
     padding: 6px 12px;
     border-top: none;
 }
+
 
 
