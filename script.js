@@ -1,81 +1,69 @@
-// Initialize storage (simulating a backend)
-if (!localStorage.getItem('sessionsDone')) {
-    localStorage.setItem('sessionsDone', JSON.stringify([]));
-}
-if (!localStorage.getItem('sessionsPaid')) {
-    localStorage.setItem('sessionsPaid', JSON.stringify([]));
-}
-
-// Function to get and parse data from local storage
-function getData(key) {
-    return JSON.parse(localStorage.getItem(key));
+// Function to fetch the CSV file from GitHub
+async function fetchCSV() {
+    const url = 'https://raw.githubusercontent.com/your-username/your-repository-name/main/sessions.csv';
+    
+    const response = await fetch(url);
+    const data = await response.text();
+    return data;
 }
 
-// Function to update the displayed data
-function updateDisplay() {
-    const sessionsDone = getData('sessionsDone').length;
-    const sessionsPaid = getData('sessionsPaid').length;
+// Function to parse CSV data
+function parseCSV(data) {
+    const lines = data.split('\n').slice(1); // Skip header line
+    const sessionsDone = [];
+    const sessionsPaid = [];
 
-    document.getElementById('sessions-done').textContent = sessionsDone;
-    document.getElementById('sessions-paid').textContent = sessionsPaid;
-    document.getElementById('progress').textContent = `${sessionsDone}/${sessionsPaid}`;
+    lines.forEach(line => {
+        const [date, time, done, paid] = line.split(',');
+        if (done > 0) {
+            sessionsDone.push({ date, time, sessions: parseInt(done) });
+        }
+        if (paid > 0) {
+            sessionsPaid.push({ date, time, sessions: parseInt(paid) });
+        }
+    });
 
-    updateHistory();
+    return { sessionsDone, sessionsPaid };
 }
 
-// Function to update the session history list
-function updateHistory() {
+// Function to update the display
+function updateDisplay(sessionsDone, sessionsPaid) {
+    const totalDone = sessionsDone.reduce((sum, session) => sum + session.sessions, 0);
+    const totalPaid = sessionsPaid.reduce((sum, payment) => sum + payment.sessions, 0);
+
+    document.getElementById('sessions-done').textContent = totalDone;
+    document.getElementById('sessions-paid').textContent = totalPaid;
+    document.getElementById('progress').textContent = `${totalDone}/${totalPaid}`;
+
+    updateHistory(sessionsDone, sessionsPaid);
+}
+
+// Function to update the history list
+function updateHistory(sessionsDone, sessionsPaid) {
     const historyList = document.getElementById('history-list');
     historyList.innerHTML = ''; // Clear existing list
 
-    const sessionsDone = getData('sessionsDone');
-    const sessionsPaid = getData('sessionsPaid');
-
     sessionsDone.forEach(session => {
         const li = document.createElement('li');
-        li.textContent = `Completed: ${session.dateTime}, ${session.sessions} sessions`;
+        li.textContent = `Completed: ${session.date} ${session.time}, ${session.sessions} sessions`;
         historyList.appendChild(li);
     });
 
     sessionsPaid.forEach(payment => {
         const li = document.createElement('li');
-        li.textContent = `Paid for: ${payment.dateTime}, ${payment.sessions} sessions`;
+        li.textContent = `Paid for: ${payment.date} ${payment.time}, ${payment.sessions} sessions`;
         historyList.appendChild(li);
     });
 }
 
-// Example functions to simulate adding sessions and payments
-function addSession() {
-    const sessionsDone = getData('sessionsDone');
-    const newSession = {
-        dateTime: new Date().toLocaleString(),
-        sessions: 1 // Assuming each session is 1 hour
-    };
-    sessionsDone.push(newSession);
-    localStorage.setItem('sessionsDone', JSON.stringify(sessionsDone));
-    updateDisplay();
+// Main function to fetch, parse, and display data
+async function main() {
+    const csvData = await fetchCSV();
+    const { sessionsDone, sessionsPaid } = parseCSV(csvData);
+    updateDisplay(sessionsDone, sessionsPaid);
 }
 
-function addPayment() {
-    const sessionsPaid = getData('sessionsPaid');
-    const newPayment = {
-        dateTime: new Date().toLocaleString(),
-        sessions: 10 // Each payment covers 10 sessions
-    };
-    sessionsPaid.push(newPayment);
-    localStorage.setItem('sessionsPaid', JSON.stringify(sessionsPaid));
-    updateDisplay();
-}
+// Run the main function when the page loads
+main();
 
-// Initialize display
-updateDisplay();
-
-// For demonstration purposes, you can manually call addSession() and addPayment()
-// to simulate adding sessions and payments. In a real scenario, these would be called
-// from specific user actions or backend events.
-
-// Example usage
-// Uncomment these to simulate adding sessions or payments
-// addSession(); // Simulate adding one session completed
-// addPayment(); // Simulate adding a payment for 10 sessions
 
