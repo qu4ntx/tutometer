@@ -79,7 +79,15 @@ async function main() {
     const csvData = await fetchCSV();
     if (csvData) {
         const { sessionsDone, sessionsPaid } = parseCSV(csvData);
-        updateDisplay(session
+        updateDisplay(sessionsDone, sessionsPaid);
+    } else {
+        console.error('Failed to load CSV data.');
+    }
+}
+
+// Run the main function when the page loads
+main();
+
 
 
 
