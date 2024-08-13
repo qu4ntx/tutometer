@@ -1,6 +1,6 @@
 // Function to fetch the CSV file from GitHub
 async function fetchCSV() {
-    const url = 'https://raw.githubusercontent.com/your-username/your-repository-name/main/sessions.csv';
+    const url = 'https://raw.githubusercontent.com/qu4ntx/your-repository-name/main/sessions.csv';
     
     const response = await fetch(url);
     const data = await response.text();
