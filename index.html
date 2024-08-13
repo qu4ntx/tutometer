@@ -11,15 +11,27 @@
         <h1>Tutometer</h1>
         <p>Your Tutoring Sessions Overview</p>
 
-        <h2>Summary</h2>
-        <p><strong>Sessions Completed:</strong> <span id="sessions-done">0</span></p>
-        <p><strong>Sessions Paid For:</strong> <span id="sessions-paid">0</span></p>
-        <p><strong>Progress:</strong> <span id="progress">0/0</span></p>
+        <!-- Tab buttons -->
+        <div class="tab">
+            <button class="tablinks" onclick="openTab(event, 'Summary')" id="defaultOpen">Summary</button>
+            <button class="tablinks" onclick="openTab(event, 'History')">History</button>
+        </div>
 
-        <h2>History</h2>
-        <ul id="history-list"></ul>
+        <!-- Tab content -->
+        <div id="Summary" class="tabcontent">
+            <h2>Summary</h2>
+            <p><strong>Sessions Completed:</strong> <span id="sessions-done">0</span></p>
+            <p><strong>Sessions Paid For:</strong> <span id="sessions-paid">0</span></p>
+            <p><strong>Progress:</strong> <span id="progress">0/0</span></p>
+        </div>
+
+        <div id="History" class="tabcontent">
+            <h2>History</h2>
+            <ul id="history-list"></ul>
+        </div>
     </div>
 
     <script src="script.js"></script>
 </body>
 </html>
+
