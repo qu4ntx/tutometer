@@ -13,14 +13,14 @@
 
         <!-- Tab buttons -->
         <div class="tab">
-            <button class="tablinks" onclick="openTab(event, 'Summary')" id="defaultOpen">Summary</button>
-            <button class="tablinks" onclick="openTab(event, 'History')">History</button>
+            <button class="tablinks" onclick="openTab(event, 'Home')" id="defaultOpen">Home</button>
+            <button class="tablinks" onclick="openTab(event, 'Log')">Log</button>
             <button class="tablinks" onclick="openTab(event, 'Tutee')">Tutee</button>
         </div>
 
         <!-- Tab content -->
-        <div id="Summary" class="tabcontent">
-            <h2>Summary</h2>
+        <div id="Home" class="tabcontent">
+            <h2>Home</h2>
             <div class="summary-item">
                 <p><strong>Sessions Completed:</strong> <span id="sessions-done">0</span></p>
             </div>
@@ -32,13 +32,14 @@
             </div>
         </div>
 
-        <div id="History" class="tabcontent">
-            <h2>History</h2>
+        <div id="Log" class="tabcontent">
+            <h2>Log</h2>
             <ul id="history-list"></ul>
         </div>
 
         <div id="Tutee" class="tabcontent">
-            <h2>Elisha</h2>
+            <h2>Tutee</h2>
+            <p><strong>Name:</strong> Elisha</p>
             <h3>Topics Covered</h3>
             <ul id="topics-list"></ul>
         </div>
