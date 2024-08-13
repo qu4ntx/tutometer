@@ -57,6 +57,7 @@ function parseTopicsCSV(data) {
         topics.push({ date, topic });
     });
 
+    console.log('Parsed Topics:', topics); // Log the parsed topics to the console
     return topics;
 }
 
@@ -97,11 +98,15 @@ function updateTopicsList(topics) {
     const topicsList = document.getElementById('topics-list');
     topicsList.innerHTML = ''; // Clear existing list
 
-    topics.forEach(topic => {
-        const li = document.createElement('li');
-        li.textContent = `${topic.date}: ${topic.topic}`;
-        topicsList.appendChild(li);
-    });
+    if (topics.length === 0) {
+        topicsList.innerHTML = '<li>No topics covered yet.</li>';
+    } else {
+        topics.forEach(topic => {
+            const li = document.createElement('li');
+            li.textContent = `${topic.date}: ${topic.topic}`;
+            topicsList.appendChild(li);
+        });
+    }
 }
 
 // Tab functionality
@@ -154,6 +159,7 @@ main();
 
 // Set the default tab to open
 document.getElementById("defaultOpen").click();
+
 
 
 
