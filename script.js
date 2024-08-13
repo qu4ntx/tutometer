@@ -1,7 +1,5 @@
-// Function to fetch the CSV file from GitHub
-async function fetchCSV() {
-    const url = 'https://raw.githubusercontent.com/qu4ntx/tutometer/main/sessions.csv';
-    
+// Function to fetch a CSV file from GitHub
+async function fetchCSV(url) {
     try {
         const response = await fetch(url);
 
@@ -19,8 +17,8 @@ async function fetchCSV() {
     }
 }
 
-// Function to parse CSV data
-function parseCSV(data) {
+// Function to parse the sessions CSV data
+function parseSessionsCSV(data) {
     if (!data) {
         console.error('No data to parse.');
         return { sessionsDone: [], sessionsPaid: [] };
@@ -42,6 +40,24 @@ function parseCSV(data) {
     });
 
     return { sessionsDone, sessionsPaid };
+}
+
+// Function to parse the topics CSV data
+function parseTopicsCSV(data) {
+    if (!data) {
+        console.error('No data to parse.');
+        return [];
+    }
+
+    const lines = data.trim().split('\n').slice(1); // Skip header line
+    const topics = [];
+
+    lines.forEach(line => {
+        const [date, topic] = line.split(',');
+        topics.push({ date, topic });
+    });
+
+    return topics;
 }
 
 // Function to update the display
@@ -76,6 +92,18 @@ function updateHistory(sessionsDone, sessionsPaid) {
     });
 }
 
+// Function to update the topics covered list
+function updateTopicsList(topics) {
+    const topicsList = document.getElementById('topics-list');
+    topicsList.innerHTML = ''; // Clear existing list
+
+    topics.forEach(topic => {
+        const li = document.createElement('li');
+        li.textContent = `${topic.date}: ${topic.topic}`;
+        topicsList.appendChild(li);
+    });
+}
+
 // Tab functionality
 function openTab(evt, tabName) {
     // Declare all variables
@@ -100,12 +128,24 @@ function openTab(evt, tabName) {
 
 // Main function to fetch, parse, and display data
 async function main() {
-    const csvData = await fetchCSV();
-    if (csvData) {
-        const { sessionsDone, sessionsPaid } = parseCSV(csvData);
+    const sessionsCSVUrl = 'https://raw.githubusercontent.com/qu4ntx/tutometer/main/sessions.csv';
+    const topicsCSVUrl = 'https://raw.githubusercontent.com/qu4ntx/tutometer/main/topics.csv';
+
+    const sessionsCSVData = await fetchCSV(sessionsCSVUrl);
+    const topicsCSVData = await fetchCSV(topicsCSVUrl);
+
+    if (sessionsCSVData) {
+        const { sessionsDone, sessionsPaid } = parseSessionsCSV(sessionsCSVData);
         updateDisplay(sessionsDone, sessionsPaid);
     } else {
-        console.error('Failed to load CSV data.');
+        console.error('Failed to load sessions CSV data.');
+    }
+
+    if (topicsCSVData) {
+        const topics = parseTopicsCSV(topicsCSVData);
+        updateTopicsList(topics);
+    } else {
+        console.error('Failed to load topics CSV data.');
     }
 }
 
@@ -114,6 +154,7 @@ main();
 
 // Set the default tab to open
 document.getElementById("defaultOpen").click();
+
 
 
 
