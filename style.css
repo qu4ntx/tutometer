@@ -63,7 +63,7 @@ p {
     display: inline-block;
     text-align: center;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add shadow for the tab-like appearance */
-    width: 140px; /* Fixed width for each tab */
+    width: 120px; /* Adjust width if necessary */
 }
 
 .tab button:hover {
@@ -122,4 +122,3 @@ p {
     margin-bottom: 15px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-
