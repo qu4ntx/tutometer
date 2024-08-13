@@ -63,13 +63,15 @@ function updateHistory(sessionsDone, sessionsPaid) {
 
     sessionsDone.forEach(session => {
         const li = document.createElement('li');
-        li.textContent = `Completed: ${session.date} ${session.time}, ${session.sessions} sessions`;
+        li.textContent = `Completed: ${session.date} ${session.time}, ${session.sessions} session${session.sessions > 1 ? 's' : ''}`;
+        li.classList.add('completed'); // Add 'completed' class
         historyList.appendChild(li);
     });
 
     sessionsPaid.forEach(payment => {
         const li = document.createElement('li');
-        li.textContent = `Paid for: ${payment.date} ${payment.time}, ${payment.sessions} sessions`;
+        li.textContent = `Paid for: ${payment.date} ${payment.time}, ${payment.sessions} session${payment.sessions > 1 ? 's' : ''}`;
+        li.classList.add('paid'); // Add 'paid' class
         historyList.appendChild(li);
     });
 }
@@ -112,6 +114,7 @@ main();
 
 // Set the default tab to open
 document.getElementById("defaultOpen").click();
+
 
 
 
