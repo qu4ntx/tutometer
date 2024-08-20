@@ -87,10 +87,12 @@ p {
     color: white;
     border: none;
     padding: 10px 20px;
-    margin: 10px 0;
+    margin: 10px 5px; /* Add space between buttons */
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
+    font-weight: bold; /* Make the text bold */
+    width: 120px; /* Make sure both buttons have the same width */
     transition: background-color 0.3s;
 }
 
