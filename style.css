@@ -29,12 +29,15 @@ h2 {
     color: #555;
     font-size: 1.5em;
     padding-bottom: 10px;
+    margin: 0;
 }
 
 h3 {
     color: #666;
     font-size: 1.2em;
     margin-top: 15px;
+    margin: 0;
+    padding: 10px 0;
 }
 
 p {
@@ -78,28 +81,27 @@ p {
 
 .tabcontent {
     display: none;  /* Hide all tab content by default */
-    padding: 10px 20px;
+    padding: 0 20px;
     border-top: none;
     position: relative;
-    overflow-y: auto;  /* Enable vertical scrolling */
-    max-height: 400px;  /* Limit the height */
+    max-height: 400px;
+    overflow-y: auto;
 }
 
-/* Fix sticky headers without overlap */
-#Log h2, #Tutee h2, #Tutee h3 {
-    position: sticky;
-    top: 0;
+.tabcontent-header {
     background-color: #fff;
     z-index: 2;
     padding-top: 10px;
     padding-bottom: 10px;
-    margin: 0;
     border-bottom: 1px solid #ccc;
+    margin-bottom: 10px;
+    position: sticky;
+    top: 0;
 }
 
-/* Remove unnecessary top gap */
-.tabcontent .sticky-placeholder {
-    height: 0; /* Keep a minimum height */
+#Log h2, #Tutee h2, #Tutee h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
 }
 
 #Link button {
@@ -107,12 +109,12 @@ p {
     color: white;
     border: none;
     padding: 10px 20px;
-    margin: 10px 5px;
+    margin: 10px 5px; /* Add space between buttons */
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
-    font-weight: bold;
-    width: 120px;
+    font-weight: bold; /* Make the text bold */
+    width: 120px; /* Make sure both buttons have the same width */
     transition: background-color 0.3s;
 }
 
@@ -123,7 +125,7 @@ p {
 #history-list, #topics-list {
     list-style-type: none;
     padding: 0;
-    margin: 15px 0;
+    margin: 0;
     text-align: left;
 }
 
@@ -160,3 +162,4 @@ p {
     margin-bottom: 15px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+
