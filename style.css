@@ -81,23 +81,25 @@ p {
     padding: 10px 20px;
     border-top: none;
     position: relative;
+    overflow-y: auto;  /* Enable vertical scrolling */
+    max-height: 400px;  /* Limit the height */
 }
 
-#Log, #Tutee {
-    max-height: 400px;  /* Set max height for the content area */
-    overflow-y: auto;   /* Enable vertical scrolling */
-}
-
-/* Ensure sticky headers stay below the tabs */
+/* Fix sticky headers without overlap */
 #Log h2, #Tutee h2, #Tutee h3 {
     position: sticky;
-    top: 50px;  /* Adjust this value to match the height of the tabs */
+    top: 0;
     background-color: #fff;
-    z-index: 1;  /* Ensure it stays above other content */
+    z-index: 2;
     padding-top: 10px;
     padding-bottom: 10px;
     margin: 0;
-    border-bottom: 1px solid #ccc;  /* Optional: adds a line under the heading */
+    border-bottom: 1px solid #ccc;
+}
+
+/* Remove unnecessary top gap */
+.tabcontent .sticky-placeholder {
+    height: 0; /* Keep a minimum height */
 }
 
 #Link button {
@@ -105,12 +107,12 @@ p {
     color: white;
     border: none;
     padding: 10px 20px;
-    margin: 10px 5px; /* Add space between buttons */
+    margin: 10px 5px;
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
-    font-weight: bold; /* Make the text bold */
-    width: 120px; /* Make sure both buttons have the same width */
+    font-weight: bold;
+    width: 120px;
     transition: background-color 0.3s;
 }
 
