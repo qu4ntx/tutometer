@@ -80,6 +80,8 @@ p {
     display: none;  /* Hide all tab content by default */
     padding: 10px 20px;
     border-top: none;
+    max-height: 400px;  /* Set max height for the content area */
+    overflow-y: auto;   /* Enable vertical scrolling */
 }
 
 #Link button {
