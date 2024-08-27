@@ -88,9 +88,10 @@ p {
     overflow-y: auto;   /* Enable vertical scrolling */
 }
 
-#Log h2, #Tutee h2 {
+/* Ensure sticky headers stay below the tabs */
+#Log h2, #Tutee h2, #Tutee h3 {
     position: sticky;
-    top: 0;
+    top: 50px;  /* Adjust this value to match the height of the tabs */
     background-color: #fff;
     z-index: 1;  /* Ensure it stays above other content */
     padding-top: 10px;
