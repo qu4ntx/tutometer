@@ -63,8 +63,16 @@ function parseTopicsCSV(data) {
 
 // Function to update the display
 function updateDisplay(sessionsDone, sessionsPaid) {
-    const totalDone = sessionsDone.reduce((sum, session) => sum + session.sessions, 0);
-    const totalPaid = sessionsPaid.reduce((sum, payment) => sum + payment.sessions, 0);
+    let totalDone = sessionsDone.reduce((sum, session) => sum + session.sessions, 0);
+    let totalPaid = sessionsPaid.reduce((sum, payment) => sum + payment.sessions, 0);
+
+    if (totalDone > totalPaid) {
+        totalDone = totalDone - totalPaid;
+        totalPaid = 0;
+    } else {
+        totalDone = totalDone - totalPaid + 10;
+        totalPaid = 10;
+    }
 
     document.getElementById('sessions-done').textContent = totalDone.toFixed(1); // Display with 1 decimal place
     document.getElementById('sessions-paid').textContent = totalPaid.toFixed(1); // Display with 1 decimal place
