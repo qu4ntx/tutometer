@@ -82,24 +82,40 @@ function updateDisplay(sessionsDone, sessionsPaid) {
 }
 
 // Function to update the session history list
+// Function to update the session history list
 function updateHistory(sessionsDone, sessionsPaid) {
     const historyList = document.getElementById('history-list');
     historyList.innerHTML = ''; // Clear existing list
 
-    sessionsDone.forEach(session => {
-        const li = document.createElement('li');
-        li.textContent = `Completed: ${session.date} ${session.time}, ${session.sessions.toFixed(1)} session${session.sessions > 1 ? 's' : ''}`;
-        li.classList.add('completed'); // Add 'completed' class
-        historyList.appendChild(li);
+    // Combine the completed and paid sessions into one array
+    const combinedSessions = [...sessionsDone.map(session => ({
+        type: 'completed',
+        date: session.date,
+        time: session.time,
+        sessions: session.sessions
+    })), ...sessionsPaid.map(payment => ({
+        type: 'paid',
+        date: payment.date,
+        time: payment.time,
+        sessions: payment.sessions
+    }))];
+
+    // Sort the combined array by date and time
+    combinedSessions.sort((a, b) => {
+        const dateA = new Date(`${a.date} ${a.time}`);
+        const dateB = new Date(`${b.date} ${b.time}`);
+        return dateA - dateB;
     });
 
-    sessionsPaid.forEach(payment => {
+    // Render the sorted sessions
+    combinedSessions.forEach(entry => {
         const li = document.createElement('li');
-        li.textContent = `Paid for: ${payment.date} ${payment.time}, ${payment.sessions.toFixed(1)} session${payment.sessions > 1 ? 's' : ''}`;
-        li.classList.add('paid'); // Add 'paid' class
+        li.textContent = `${entry.type === 'completed' ? 'Completed' : 'Paid for'}: ${entry.date} ${entry.time}, ${entry.sessions.toFixed(1)} session${entry.sessions > 1 ? 's' : ''}`;
+        li.classList.add(entry.type); // Add 'completed' or 'paid' class
         historyList.appendChild(li);
     });
 }
+
 
 // Function to update the topics covered list
 function updateTopicsList(topics) {
