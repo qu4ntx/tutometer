@@ -31,11 +31,11 @@ function parseSessionsCSV(data) {
     lines.forEach(line => {
         const [date, time, done, paid] = line.split(',');
 
-        if (parseInt(done) > 0) {
-            sessionsDone.push({ date, time, sessions: parseInt(done) });
+        if (parseFloat(done) > 0) {
+            sessionsDone.push({ date, time, sessions: parseFloat(done) });
         }
-        if (parseInt(paid) > 0) {
-            sessionsPaid.push({ date, time, sessions: parseInt(paid) });
+        if (parseFloat(paid) > 0) {
+            sessionsPaid.push({ date, time, sessions: parseFloat(paid) });
         }
     });
 
@@ -66,9 +66,9 @@ function updateDisplay(sessionsDone, sessionsPaid) {
     const totalDone = sessionsDone.reduce((sum, session) => sum + session.sessions, 0);
     const totalPaid = sessionsPaid.reduce((sum, payment) => sum + payment.sessions, 0);
 
-    document.getElementById('sessions-done').textContent = totalDone;
-    document.getElementById('sessions-paid').textContent = totalPaid;
-    document.getElementById('progress').textContent = `${totalDone}/${totalPaid}`;
+    document.getElementById('sessions-done').textContent = totalDone.toFixed(2); // Display with 2 decimal places
+    document.getElementById('sessions-paid').textContent = totalPaid.toFixed(2); // Display with 2 decimal places
+    document.getElementById('progress').textContent = `${totalDone.toFixed(2)}/${totalPaid.toFixed(2)}`;
 
     updateHistory(sessionsDone, sessionsPaid);
 }
@@ -159,13 +159,3 @@ main();
 
 // Set the default tab to open
 document.getElementById("defaultOpen").click();
-
-
-
-
-
-
-
-
-
-
