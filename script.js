@@ -66,9 +66,9 @@ function updateDisplay(sessionsDone, sessionsPaid) {
     const totalDone = sessionsDone.reduce((sum, session) => sum + session.sessions, 0);
     const totalPaid = sessionsPaid.reduce((sum, payment) => sum + payment.sessions, 0);
 
-    document.getElementById('sessions-done').textContent = totalDone.toFixed(2); // Display with 2 decimal places
-    document.getElementById('sessions-paid').textContent = totalPaid.toFixed(2); // Display with 2 decimal places
-    document.getElementById('progress').textContent = `${totalDone.toFixed(2)}/${totalPaid.toFixed(2)}`;
+    document.getElementById('sessions-done').textContent = totalDone.toFixed(1); // Display with 1 decimal place
+    document.getElementById('sessions-paid').textContent = totalPaid.toFixed(1); // Display with 1 decimal place
+    document.getElementById('progress').textContent = `${totalDone.toFixed(1)}/${totalPaid.toFixed(1)}`;
 
     updateHistory(sessionsDone, sessionsPaid);
 }
@@ -80,14 +80,14 @@ function updateHistory(sessionsDone, sessionsPaid) {
 
     sessionsDone.forEach(session => {
         const li = document.createElement('li');
-        li.textContent = `Completed: ${session.date} ${session.time}, ${session.sessions} session${session.sessions > 1 ? 's' : ''}`;
+        li.textContent = `Completed: ${session.date} ${session.time}, ${session.sessions.toFixed(1)} session${session.sessions > 1 ? 's' : ''}`;
         li.classList.add('completed'); // Add 'completed' class
         historyList.appendChild(li);
     });
 
     sessionsPaid.forEach(payment => {
         const li = document.createElement('li');
-        li.textContent = `Paid for: ${payment.date} ${payment.time}, ${payment.sessions} session${payment.sessions > 1 ? 's' : ''}`;
+        li.textContent = `Paid for: ${payment.date} ${payment.time}, ${payment.sessions.toFixed(1)} session${payment.sessions > 1 ? 's' : ''}`;
         li.classList.add('paid'); // Add 'paid' class
         historyList.appendChild(li);
     });
