@@ -65,21 +65,24 @@ function parseTopicsCSV(data) {
 function updateDisplay(sessionsDone, sessionsPaid) {
     let totalDone = sessionsDone.reduce((sum, session) => sum + session.sessions, 0);
     let totalPaid = sessionsPaid.reduce((sum, payment) => sum + payment.sessions, 0);
+    
+    // Calculate unpaid sessions (sessions that have been completed but not yet paid for)
+    let unpaidSessions = totalDone - totalPaid;
 
-    if (totalDone > totalPaid) {
-        totalDone = totalDone - totalPaid;
-        totalPaid = 0;
-    } else {
-        totalDone = totalDone - totalPaid + 10;
-        totalPaid = 10;
+    // Ensure unpaid sessions can't go negative and calculate unpaid sessions out of 10
+    if (unpaidSessions < 0) {
+        unpaidSessions = 0;
+    } else if (unpaidSessions > 10) {
+        unpaidSessions = unpaidSessions % 10;
     }
 
-    document.getElementById('sessions-done').textContent = totalDone.toFixed(1); // Display with 1 decimal place
-    document.getElementById('sessions-paid').textContent = totalPaid.toFixed(1); // Display with 1 decimal place
-    document.getElementById('progress').textContent = `${totalDone.toFixed(1)}/${totalPaid.toFixed(1)}`;
+    document.getElementById('sessions-done').textContent = totalDone.toFixed(1); // Display total sessions done
+    document.getElementById('unpaid-sessions').textContent = unpaidSessions.toFixed(1); // Display unpaid sessions
+    document.getElementById('progress').textContent = `${totalDone.toFixed(1)} completed, ${unpaidSessions.toFixed(1)} unpaid`;
 
     updateHistory(sessionsDone, sessionsPaid);
 }
+
 
 // Function to update the session history list
 // Function to update the session history list
