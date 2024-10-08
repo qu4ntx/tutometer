@@ -5,7 +5,7 @@ async function fetchCSV(url) {
 
         // Check if the response is okay (status code 200-299)
         if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
+            throw new Error(HTTP error! Status: ${response.status});
         }
 
         const data = await response.text();
@@ -65,24 +65,21 @@ function parseTopicsCSV(data) {
 function updateDisplay(sessionsDone, sessionsPaid) {
     let totalDone = sessionsDone.reduce((sum, session) => sum + session.sessions, 0);
     let totalPaid = sessionsPaid.reduce((sum, payment) => sum + payment.sessions, 0);
-    
-    // Calculate unpaid sessions (sessions that have been completed but not yet paid for)
-    let unpaidSessions = totalDone - totalPaid;
 
-    // Ensure unpaid sessions can't go negative and calculate unpaid sessions out of 10
-    if (unpaidSessions < 0) {
-        unpaidSessions = 0;
-    } else if (unpaidSessions > 10) {
-        unpaidSessions = unpaidSessions % 10;
+    if (totalDone > totalPaid) {
+        totalDone = totalDone - totalPaid;
+        totalPaid = 0;
+    } else {
+        totalDone = totalDone - totalPaid + 10;
+        totalPaid = 10;
     }
 
-    document.getElementById('sessions-done').textContent = totalDone.toFixed(1); // Display total sessions done
-    document.getElementById('unpaid-sessions').textContent = unpaidSessions.toFixed(1); // Display unpaid sessions
-    document.getElementById('progress').textContent = `${totalDone.toFixed(1)} completed, ${unpaidSessions.toFixed(1)} unpaid`;
+    document.getElementById('sessions-done').textContent = totalDone.toFixed(1); // Display with 1 decimal place
+    document.getElementById('sessions-paid').textContent = totalPaid.toFixed(1); // Display with 1 decimal place
+    document.getElementById('progress').textContent = ${totalDone.toFixed(1)}/${totalPaid.toFixed(1)};
 
     updateHistory(sessionsDone, sessionsPaid);
 }
-
 
 // Function to update the session history list
 // Function to update the session history list
@@ -105,15 +102,15 @@ function updateHistory(sessionsDone, sessionsPaid) {
 
     // Sort the combined array by date and time
     combinedSessions.sort((a, b) => {
-        const dateA = new Date(`${a.date} ${a.time}`);
-        const dateB = new Date(`${b.date} ${b.time}`);
+        const dateA = new Date(${a.date} ${a.time});
+        const dateB = new Date(${b.date} ${b.time});
         return dateA - dateB;
     });
 
     // Render the sorted sessions
     combinedSessions.forEach(entry => {
         const li = document.createElement('li');
-        li.textContent = `${entry.type === 'completed' ? 'Completed' : 'Paid for'}: ${entry.date} ${entry.time}, ${entry.sessions.toFixed(1)} session${entry.sessions > 1 ? 's' : ''}`;
+        li.textContent = ${entry.type === 'completed' ? 'Completed' : 'Paid for'}: ${entry.date} ${entry.time}, ${entry.sessions.toFixed(1)} session${entry.sessions > 1 ? 's' : ''};
         li.classList.add(entry.type); // Add 'completed' or 'paid' class
         historyList.appendChild(li);
     });
@@ -130,7 +127,7 @@ function updateTopicsList(topics) {
     } else {
         topics.forEach(topic => {
             const li = document.createElement('li');
-            li.textContent = `${topic.date}: ${topic.topic}`;
+            li.textContent = ${topic.date}: ${topic.topic};
             topicsList.appendChild(li);
         });
     }
