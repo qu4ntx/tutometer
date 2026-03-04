@@ -141,8 +141,9 @@ function openTab(evt, tabName) {
 
 // Main function to fetch, parse, and display data
 async function main() {
-    const sessionsCSVUrl = 'https://raw.githubusercontent.com/qu4ntx/tutometer/main/sessions.csv';
-    const topicsCSVUrl = 'https://raw.githubusercontent.com/qu4ntx/tutometer/main/topics.csv';
+    // Load CSV files from the same repo/site path so forks and GitHub Pages work.
+    const sessionsCSVUrl = 'sessions.csv';
+    const topicsCSVUrl = 'topics.csv';
 
     const sessionsCSVData = await fetchCSV(sessionsCSVUrl);
     const topicsCSVData = await fetchCSV(topicsCSVUrl);
