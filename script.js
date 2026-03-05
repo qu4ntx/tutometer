@@ -21,25 +21,45 @@ async function fetchCSV(url) {
 function parseSessionsCSV(data) {
     if (!data) {
         console.error('No data to parse.');
-        return { sessionsDone: [], sessionsPaid: [] };
+        return { sessionsDone: [], sessionsPaid: [], sessionEvents: [] };
     }
 
     const lines = data.trim().split('\n').slice(1); // Skip header line
     const sessionsDone = [];
     const sessionsPaid = [];
+    const sessionEvents = [];
 
     lines.forEach(line => {
-        const [date, time, done, paid] = line.split(',');
+        const parts = line.split(',');
+        let date = '';
+        let time = '';
+        let done = '0';
+        let paid = '0';
 
-        if (parseFloat(done) > 0) {
-            sessionsDone.push({ date, time, sessions: parseFloat(done) });
+        // Support both 4-column rows and legacy 3-column rows without a time field.
+        if (parts.length >= 4) {
+            [date, time, done, paid] = parts;
+        } else if (parts.length === 3) {
+            [date, done, paid] = parts;
+        } else {
+            return;
         }
-        if (parseFloat(paid) > 0) {
-            sessionsPaid.push({ date, time, sessions: parseFloat(paid) });
+
+        const doneValue = parseFloat(done) || 0;
+        const paidValue = parseFloat(paid) || 0;
+
+        if (doneValue > 0) {
+            sessionsDone.push({ date, time, sessions: doneValue });
+        }
+        if (paidValue > 0) {
+            sessionsPaid.push({ date, time, sessions: paidValue });
+        }
+        if (doneValue > 0 || paidValue > 0) {
+            sessionEvents.push({ date, time, done: doneValue, paid: paidValue });
         }
     });
 
-    return { sessionsDone, sessionsPaid };
+    return { sessionsDone, sessionsPaid, sessionEvents };
 }
 
 // Function to parse the topics CSV data
@@ -62,7 +82,7 @@ function parseTopicsCSV(data) {
 }
 
 // Function to update the display
-function updateDisplay(sessionsDone, sessionsPaid) {
+function updateDisplay(sessionsDone, sessionsPaid, sessionEvents) {
     let totalDone = sessionsDone.reduce((sum, session) => sum + session.sessions, 0);
     let totalPaid = sessionsPaid.reduce((sum, payment) => sum + payment.sessions, 0);
 
@@ -78,26 +98,43 @@ function updateDisplay(sessionsDone, sessionsPaid) {
     document.getElementById('sessions-paid').textContent = totalPaid.toFixed(1); // Display with 1 decimal place
     document.getElementById('progress').textContent = `${totalDone.toFixed(1)}/${totalPaid.toFixed(1)}`;
 
-    updateHistory(sessionsDone, sessionsPaid);
+    updateHistory(sessionEvents);
 }
 
 // Function to update the session history list
-function updateHistory(sessionsDone, sessionsPaid) {
+function updateHistory(sessionEvents) {
     const historyList = document.getElementById('history-list');
     historyList.innerHTML = ''; // Clear existing list
+    let paidCredit = 0;
 
-    sessionsDone.forEach(session => {
-        const li = document.createElement('li');
-        li.textContent = `Completed: ${session.date} ${session.time}, ${session.sessions.toFixed(1)} session${session.sessions > 1 ? 's' : ''}`;
-        li.classList.add('completed'); // Add 'completed' class
-        historyList.appendChild(li);
-    });
+    sessionEvents.forEach(event => {
+        const timestamp = event.time ? `${event.date} ${event.time}` : event.date;
 
-    sessionsPaid.forEach(payment => {
-        const li = document.createElement('li');
-        li.textContent = `Paid for: ${payment.date} ${payment.time}, ${payment.sessions.toFixed(1)} session${payment.sessions > 1 ? 's' : ''}`;
-        li.classList.add('paid'); // Add 'paid' class
-        historyList.appendChild(li);
+        if (event.paid > 0) {
+            paidCredit += event.paid;
+            const paymentItem = document.createElement('li');
+            paymentItem.textContent = `Paid for: ${timestamp}, ${event.paid.toFixed(1)} session${event.paid > 1 ? 's' : ''}`;
+            paymentItem.classList.add('paid');
+            historyList.appendChild(paymentItem);
+        }
+
+        if (event.done > 0) {
+            const coveredSessions = Math.min(event.done, paidCredit);
+            const unpaidSessions = event.done - coveredSessions;
+            paidCredit -= coveredSessions;
+
+            const sessionItem = document.createElement('li');
+            sessionItem.classList.add('completed');
+
+            if (unpaidSessions > 0) {
+                sessionItem.textContent = `Completed: ${timestamp}, ${event.done.toFixed(1)} session${event.done > 1 ? 's' : ''} (${unpaidSessions.toFixed(1)} unpaid)`;
+                sessionItem.classList.add('unpaid');
+            } else {
+                sessionItem.textContent = `Completed: ${timestamp}, ${event.done.toFixed(1)} session${event.done > 1 ? 's' : ''} (paid)`;
+            }
+
+            historyList.appendChild(sessionItem);
+        }
     });
 }
 
@@ -149,8 +186,8 @@ async function main() {
     const topicsCSVData = await fetchCSV(topicsCSVUrl);
 
     if (sessionsCSVData) {
-        const { sessionsDone, sessionsPaid } = parseSessionsCSV(sessionsCSVData);
-        updateDisplay(sessionsDone, sessionsPaid);
+        const { sessionsDone, sessionsPaid, sessionEvents } = parseSessionsCSV(sessionsCSVData);
+        updateDisplay(sessionsDone, sessionsPaid, sessionEvents);
     } else {
         console.error('Failed to load sessions CSV data.');
     }
