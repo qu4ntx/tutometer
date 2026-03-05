@@ -17,6 +17,15 @@ async function fetchCSV(url) {
     }
 }
 
+// Build data file URLs from the loaded script location (GitHub Pages-safe).
+function getDataFileUrl(filename) {
+    const scriptTag = document.querySelector('script[src*="script.js"]');
+    if (scriptTag && scriptTag.src) {
+        return new URL(filename, scriptTag.src).href;
+    }
+    return new URL(filename, window.location.href).href;
+}
+
 // Function to parse the sessions CSV data
 function parseSessionsCSV(data) {
     if (!data) {
@@ -105,13 +114,53 @@ function updateDisplay(sessionsDone, sessionsPaid, sessionEvents) {
 function updateHistory(sessionEvents) {
     const historyList = document.getElementById('history-list');
     historyList.innerHTML = ''; // Clear existing list
+
+    // Track final unpaid amounts per completed session after all payments are applied.
+    const completedSessions = [];
+    const unpaidQueue = [];
     let paidCredit = 0;
+
+    sessionEvents.forEach(event => {
+        if (event.paid > 0) {
+            paidCredit += event.paid;
+
+            while (paidCredit > 0 && unpaidQueue.length > 0) {
+                const oldestUnpaidIndex = unpaidQueue[0];
+                const oldestUnpaid = completedSessions[oldestUnpaidIndex];
+                const covered = Math.min(oldestUnpaid.unpaidRemaining, paidCredit);
+
+                oldestUnpaid.unpaidRemaining -= covered;
+                paidCredit -= covered;
+
+                if (oldestUnpaid.unpaidRemaining <= 0.0001) {
+                    unpaidQueue.shift();
+                }
+            }
+        }
+
+        if (event.done > 0) {
+            const completed = { unpaidRemaining: event.done };
+            completedSessions.push(completed);
+            const completedIndex = completedSessions.length - 1;
+
+            if (paidCredit > 0) {
+                const covered = Math.min(completed.unpaidRemaining, paidCredit);
+                completed.unpaidRemaining -= covered;
+                paidCredit -= covered;
+            }
+
+            if (completed.unpaidRemaining > 0.0001) {
+                unpaidQueue.push(completedIndex);
+            }
+        }
+    });
+
+    let completedIndex = 0;
 
     sessionEvents.forEach(event => {
         const timestamp = event.time ? `${event.date} ${event.time}` : event.date;
 
         if (event.paid > 0) {
-            paidCredit += event.paid;
             const paymentItem = document.createElement('li');
             paymentItem.textContent = `Paid for: ${timestamp}, ${event.paid.toFixed(1)} session${event.paid > 1 ? 's' : ''}`;
             paymentItem.classList.add('paid');
@@ -119,9 +168,8 @@ function updateHistory(sessionEvents) {
         }
 
         if (event.done > 0) {
-            const coveredSessions = Math.min(event.done, paidCredit);
-            const unpaidSessions = event.done - coveredSessions;
-            paidCredit -= coveredSessions;
+            const unpaidSessions = Number(completedSessions[completedIndex].unpaidRemaining.toFixed(1));
+            completedIndex += 1;
 
             const sessionItem = document.createElement('li');
             sessionItem.classList.add('completed');
@@ -178,9 +226,9 @@ function openTab(evt, tabName) {
 
 // Main function to fetch, parse, and display data
 async function main() {
-    // Load CSV files from the same repo/site path so forks and GitHub Pages work.
-    const sessionsCSVUrl = 'sessions.csv';
-    const topicsCSVUrl = 'topics.csv';
+    // Resolve from script location so data loads correctly on GitHub Pages project URLs.
+    const sessionsCSVUrl = getDataFileUrl('sessions.csv');
+    const topicsCSVUrl = getDataFileUrl('topics.csv');
 
     const sessionsCSVData = await fetchCSV(sessionsCSVUrl);
     const topicsCSVData = await fetchCSV(topicsCSVUrl);
